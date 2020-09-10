@@ -1,57 +1,134 @@
-#Just Another Very Intelligent System JARVIS
+'''Just Another Very Intelligent System JARVIS - AI'''
 import pyttsx3
 import datetime
 import speech_recognition as sr
-# pyttsx3 is a text-to-speech conversion library in Python. 
-# Unlike alternative libraries, it works offline, and is compatible with both Python 2 and 3.
+import wikipedia
+import webbrowser
+import os
+import random
+import smtplib
+'''pyttsx3 is a text-to-speech conversion library in Python.'''
+'''Unlike alternative libraries, it works offline, and is compatible with both Python 2 and 3.'''
 
+'''sapi5 is used for using voices in windows'''
 engine = pyttsx3.init('sapi5')
-
 voices = engine.getProperty('voices')
-engine.setProperty('voice', voices[1].id)
+engine.setProperty('voice',voices[0].id)
+
 
 def speak(audio):
     engine.say(audio)
     engine.runAndWait()
 
+
 def WishMe():
     hour = int(datetime.datetime.now().hour)
-    if hour>=0 and hour<12:
+    if hour>=0 and hour<=12:
         speak("Good Morning!")
+
 
     elif hour>=12 and hour<18:
         speak("Good Afternoon")
-
+        print("Good Afternoon")
+    
     else:
         speak("Good Evening!")
 
-    speak("I am Jarvis. Please tell me how may i help you.")
+    speak("I am Jarvis Sir. Please tell me how may i help you.")
+
 
 def takeCommand():
+    '''It takes microphone input from the user and returns string output'''
+    r = sr.Recognizer()
+    with sr.Microphone() as source:
+        print("Listening...")
+        r.pause_threshold = 1
+        audio = r.listen(source)
 
- r = sr.Recognizer()
- with sr.Microphone() as source:
-     print("Listening")
-     r.pause_threshold = 1
-     audio = r.listen(source)
+    try:
+        print("Recognizing...")
+        query = r.recognize_google(audio,language='en-in')
+        print(F"User said: : {query}\n")
 
-     try:
-         print("Recognizing...")
-         query = r.recognize_google(audio,language='en-in')
-         print(f"User said: {query}\n")
+    except Exception as e:
 
-     except Exception as e:
-         # print(e)
+        print("Say that again please...")
+        return "None"
+    return query
 
-         print("Say that again please...")
-         return "None"
-     return query
-
-
-
-
+def sendEmail(to,content):
+    server = smtplib.SMTP('smtp.gmail.com', 587)
+    server.ehlo()
+    server.starttls()
+    server.login('youremail@gmail.com','yourpassword')
+    server.sendmail('youremail@gmail.com', to, content)
+    server.close()
 
 
 if __name__ == "__main__":
     WishMe()
-    takeCommand()
+    while True:
+    # if 1:
+        query = takeCommand().lower()
+
+        '''Logic for executing tasks based on query'''
+
+        if 'wikipedia' in query:
+            speak('Searching Wikipedia...')
+            query = query.replace("wikipedia", " ")
+            results = wikipedia.summary(query, sentences=2)
+            speak("According to wikipedia")
+            print(results)
+            speak(results)
+
+        elif 'open youtube' in query:
+            webbrowser.open("youtube.com")
+
+        elif 'open google' in query:
+            webbrowser.open("google.com")
+
+        elif 'open stackoverflow' in query:
+            webbrowser.open("https://stackoverflow.com/")
+
+        elif 'play music' in query:
+            music_dir = 'E:\\Music'
+            songs = os.listdir(music_dir)
+            print(songs)
+            os.startfile(os.path.join(music_dir,songs[0]))
+
+        elif 'the time' in query:
+            strTime = datetime.datetime.now().strftime("%H:%M:%S")
+            speak(F"Sir, the time is {strTime}")
+
+
+        elif 'the date' in query:
+            strDate = datetime.date.today()
+            speak(strDate)
+
+        elif 'open code' in query:
+            codePath = "C:\\Program Files\\Microsoft VS Code\\Code.exe"
+            os.startfile(codePath)
+
+
+        elif 'email to jay' in query:
+            try:
+                speak("What should I say?")
+                content = takeCommand()
+                to = "youremail@gmail.com"
+                sendEmail(to, content)
+                speak("Email has been sent!")
+
+            except Exception as e:
+
+                print(e)
+
+                speak("Sorry my friend Jay. I am not able to send this email")
+        elif 'exit' in query:
+            quit()
+
+
+
+
+
+
+       
