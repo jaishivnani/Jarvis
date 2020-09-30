@@ -7,7 +7,7 @@ import webbrowser
 import os
 import random
 import smtplib
-'''pyttsx3 is a text-to-speech conversion library in Python.'''
+'''pyttsx3 is a text-to-speech conversion library in Python'''
 '''Unlike alternative libraries, it works offline, and is compatible with both Python 2 and 3.'''
 
 '''sapi5 is used for using voices in windows'''
